@@ -30,13 +30,17 @@ header .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .kpi{background:var(--paper);border:1px solid var(--line);padding:14px 16px}
 .kpi b{display:block;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:34px;color:var(--deep);line-height:1.1}
 .kpi span{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.cards{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:22px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px;align-items:start}
 .card{background:var(--paper);border:1px solid var(--line);padding:16px}
 .card h3{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:400;margin-bottom:12px}
 .bar{display:flex;height:16px;border-radius:8px;overflow:hidden;background:#e7e3db}
 .bar i{display:block}
 .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:13px}
 .legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;background:var(--c)}
+.facts{display:grid;gap:10px}
+.facts div{display:flex;align-items:baseline;gap:10px}
+.facts b{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:26px;color:var(--deep);min-width:58px}
+.facts span{font-size:13px;color:var(--muted)}
 .weeks{display:flex;align-items:flex-end;gap:6px;height:90px}
 .weeks div{flex:1;max-width:48px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:10px;color:var(--muted)}
 .weeks i{display:block;width:100%;background:var(--olive);border-radius:3px 3px 0 0;min-height:2px}
@@ -100,7 +104,7 @@ dialog select{width:100%;padding:8px;border:1px solid var(--line);background:#ff
     <div class="kpis" id="kpis"></div>
     <div class="cards">
       <div class="card"><h3>Avance (personas)</h3><div class="bar" id="bar"></div><div class="legend" id="legend"></div></div>
-      <div class="card"><h3>Confirmaciones por semana</h3><div class="weeks" id="weeks"></div></div>
+      <div class="card"><h3>Seguimiento</h3><div class="facts" id="facts"></div></div>
     </div>
     <div class="tools">
       <input id="q" type="search" placeholder="Buscar nombre o correo">
@@ -181,9 +185,13 @@ function draw(){
   var tot=Math.max(1,s.yes+s.no+s.pending),p=function(n){return (100*n/tot).toFixed(1)+'%'};
   $('bar').innerHTML='<i style="width:'+p(s.yes)+';background:#56654b"></i><i style="width:'+p(s.no)+';background:#a1897a"></i>';
   $('legend').innerHTML='<span style="--c:#56654b">Asisten '+Math.round(100*s.yes/tot)+'%</span><span style="--c:#a1897a">No asisten '+Math.round(100*s.no/tot)+'%</span><span style="--c:#e7e3db">Sin respuesta '+Math.round(100*s.pending/tot)+'%</span>';
-  var wk={};D.responses.forEach(function(r){var d=new Date(r.createdAt);d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));var k=d.toISOString().slice(0,10);wk[k]=(wk[k]||0)+1});
-  var keys=Object.keys(wk).sort().slice(-10),mx=Math.max.apply(null,keys.map(function(k){return wk[k]}).concat([1]));
-  $('weeks').innerHTML=keys.length?keys.map(function(k){var d=new Date(k+'T12:00:00');return '<div title="'+wk[k]+'"><span>'+wk[k]+'</span><i style="height:'+(70*wk[k]/mx)+'%"></i><span>'+d.getDate()+'/'+(d.getMonth()+1)+'</span></div>'}).join(''):'<div class="empty" style="width:100%">Aún no hay confirmaciones</div>';
+  var nowT=Date.now(),days=Math.max(0,Math.ceil((new Date('2027-02-05T23:59:59-04:00')-nowT)/864e5));
+  var week=D.responses.filter(function(r){return s.R[r.id]&&nowT-new Date(r.updatedAt)<7*864e5&&r.lastBy!=='admin'}).length;
+  var pg=s.groups-s.done,plus=0,plusNamed=0;D.groups.forEach(function(g){var al=s.R[g.id]?align(g.members,s.R[g.id].answers):[];g.members.forEach(function(m,i){if(m.plus){plus++;if(al[i]&&al[i].attending&&al[i].name)plusNamed++}})});
+  $('facts').innerHTML='<div><b>'+days+'</b><span>días para cerrar el RSVP</span></div>'
+    +'<div><b>'+week+'</b><span>respuestas en los últimos 7 días</span></div>'
+    +'<div><b>'+pg+'</b><span>grupos sin responder · <button class="ed" data-go="pending">ver</button></span></div>'
+    +(plus?'<div><b>'+plusNamed+' / '+plus+'</b><span>acompañantes confirmados con nombre</span></div>':'');
   var q=norm($('q').value),out='';
   D.groups.forEach(function(g){
     var r=s.R[g.id];
@@ -285,6 +293,7 @@ function openEdit(id){
   $('email').value=r?r.email||'':'';$('enote').value=r&&r.note||'';$('edel').hidden=!g;$('edlg').showModal();
 }
 $('list').addEventListener('click',function(e){var b=e.target.closest('.ed');if(b)openEdit(b.getAttribute('data-id'))});
+$('facts').addEventListener('click',function(e){if(e.target.closest('[data-go]')){[].forEach.call($('chips').children,function(c){c.classList.toggle('on',c.getAttribute('data-f')==='pending')});F='pending';draw();$('list').scrollIntoView({behavior:'smooth'})}});
 $('add').onclick=function(){openEdit(null)};
 $('eadd').onclick=function(){erow({name:''})};
 $('eplus').onclick=function(){erow({name:'',plus:true})};
