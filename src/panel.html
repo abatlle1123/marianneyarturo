@@ -26,6 +26,19 @@ header .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 #login h1{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:32px;color:var(--deep);margin:6px 0 18px}
 #login input{width:100%;padding:11px 14px;border:1px solid var(--line);background:#fff;margin-bottom:12px}
 .err{color:var(--warn);font-size:13px;min-height:1.3em;margin-top:8px}
+.sumcard{background:var(--paper);border:1px solid var(--line);padding:18px 20px;margin:22px 0}
+.head2{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.head2 b{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:44px;color:var(--deep);line-height:1}
+.head2 span{font-size:15px;color:var(--ink)}
+.sub2{font-size:13px;color:var(--muted)}
+.mx{width:100%;border-collapse:collapse;margin-top:16px;font-size:14px}
+.mx th{font-weight:400;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:right;padding:6px 8px;border-bottom:1px solid var(--line)}
+.mx th:first-child,.mx td:first-child{text-align:left}
+.mx th i{display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--c);margin-right:6px}
+.mx td{text-align:right;padding:8px;border-bottom:1px solid var(--line);font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--deep)}
+.mx td:first-child{font-family:'Jost',sans-serif;font-size:13px;color:var(--muted)}
+.mx td:last-child,.mx th:last-child{font-weight:500}
+@media(max-width:560px){.mx th{font-size:9px;letter-spacing:.04em;padding:6px 4px}.mx td{font-size:18px;padding:6px 4px}.mx th i{display:none}}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0 14px}
 .kpi{background:var(--paper);border:1px solid var(--line);padding:14px 16px}
 .kpi b{display:block;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:34px;color:var(--deep);line-height:1.1}
@@ -101,11 +114,7 @@ dialog select{width:100%;padding:8px;border:1px solid var(--line);background:#ff
     <button class="btn" id="out" title="Salir">Salir</button>
   </div></header>
   <main class="wrap">
-    <div class="kpis" id="kpis"></div>
-    <div class="cards">
-      <div class="card"><h3>Avance (personas)</h3><div class="bar" id="bar"></div><div class="legend" id="legend"></div></div>
-      <div class="card"><h3>Seguimiento</h3><div class="facts" id="facts"></div></div>
-    </div>
+    <div class="sumcard" id="sumcard"></div>
     <div class="tools">
       <input id="q" type="search" placeholder="Buscar nombre o correo">
       <div class="chips" id="chips">
@@ -173,25 +182,21 @@ function align(members,answers){var left=(answers||[]).slice(),out=[];
     out.push(i>=0?left.splice(i,1)[0]:null)});return out}
 function stats(){
   var R={};D.responses.forEach(function(r){R[r.id]=r});
-  var s={groups:D.groups.length,done:0,yes:0,no:0,pending:0,people:0,R:R};
+  var s={groups:D.groups.length,done:0,yes:0,no:0,pending:0,people:0,gYes:0,gNo:0,R:R};
   D.groups.forEach(function(g){s.people+=g.members.length;var r=R[g.id];
-    if(r){s.done++;align(g.members,r.answers).forEach(function(a){a?(a.attending?s.yes++:s.no++):s.pending++})}else s.pending+=g.members.length});
+    if(r){s.done++;var al=align(g.members,r.answers),any=false,ans=false;al.forEach(function(a){if(a){ans=true;a.attending?(s.yes++,any=true):s.no++}else s.pending++});
+      if(any)s.gYes++;else if(ans)s.gNo++}else s.pending+=g.members.length});
   return s;
 }
 function draw(){
   var s=stats();
-  $('kpis').innerHTML=[[s.done+' / '+s.groups,'grupos confirmados'],[s.yes,'personas asisten'],[s.no,'no asisten'],[s.pending,'sin respuesta']]
-    .map(function(k){return '<div class="kpi"><b>'+k[0]+'</b><span>'+k[1]+'</span></div>'}).join('');
-  var tot=Math.max(1,s.yes+s.no+s.pending),p=function(n){return (100*n/tot).toFixed(1)+'%'};
-  $('bar').innerHTML='<i style="width:'+p(s.yes)+';background:#56654b"></i><i style="width:'+p(s.no)+';background:#a1897a"></i>';
-  $('legend').innerHTML='<span style="--c:#56654b">Asisten '+Math.round(100*s.yes/tot)+'%</span><span style="--c:#a1897a">No asisten '+Math.round(100*s.no/tot)+'%</span><span style="--c:#e7e3db">Sin respuesta '+Math.round(100*s.pending/tot)+'%</span>';
-  var nowT=Date.now(),days=Math.max(0,Math.ceil((new Date('2027-02-05T23:59:59-04:00')-nowT)/864e5));
-  var week=D.responses.filter(function(r){return s.R[r.id]&&nowT-new Date(r.updatedAt)<7*864e5&&r.lastBy!=='admin'}).length;
-  var pg=s.groups-s.done,plus=0,plusNamed=0;D.groups.forEach(function(g){var al=s.R[g.id]?align(g.members,s.R[g.id].answers):[];g.members.forEach(function(m,i){if(m.plus){plus++;if(al[i]&&al[i].attending&&al[i].name)plusNamed++}})});
-  $('facts').innerHTML='<div><b>'+days+'</b><span>días para cerrar el RSVP</span></div>'
-    +'<div><b>'+week+'</b><span>respuestas en los últimos 7 días</span></div>'
-    +'<div><b>'+pg+'</b><span>grupos sin responder · <button class="ed" data-go="pending">ver</button></span></div>'
-    +(plus?'<div><b>'+plusNamed+' / '+plus+'</b><span>acompañantes confirmados con nombre</span></div>':'');
+  var tot=Math.max(1,s.people),p=function(n){return (100*n/tot).toFixed(1)+'%'},gP=s.groups-s.gYes-s.gNo;
+  $('sumcard').innerHTML='<div class="head2"><div><b>'+s.yes+'</b> <span>de '+s.people+' invitados asisten</span></div>'
+    +'<div class="sub2">'+(s.yes+s.no)+' de '+s.people+' ya respondieron · '+s.done+' de '+s.groups+' grupos</div></div>'
+    +'<div class="bar"><i style="width:'+p(s.yes)+';background:#56654b"></i><i style="width:'+p(s.no)+';background:#a1897a"></i></div>'
+    +'<table class="mx"><tr><th></th><th><i style="--c:#56654b"></i>Asisten</th><th><i style="--c:#a1897a"></i>No asisten</th><th><i style="--c:#e7e3db"></i>Sin respuesta</th><th>Total</th></tr>'
+    +'<tr><td>Personas</td><td>'+s.yes+'</td><td>'+s.no+'</td><td>'+s.pending+'</td><td>'+s.people+'</td></tr>'
+    +'<tr><td>Grupos</td><td>'+s.gYes+'</td><td>'+s.gNo+'</td><td>'+gP+'</td><td>'+s.groups+'</td></tr></table>';
   var q=norm($('q').value),out='';
   D.groups.forEach(function(g){
     var r=s.R[g.id];
@@ -277,7 +282,7 @@ function preview(){
   $('prev').innerHTML=g.slice(0,40).map(function(x){return '<div>'+x.members.map(function(m){return m.plus?'<i>acompañante</i>':esc(m.name)}).join(' · ')+'</div>'}).join('')+(g.length>40?'<div>… y '+(g.length-40)+' más</div>':'');
   $('go').disabled=!g.length;CHECKED=false;$('go').textContent=D&&D.groups.length?'Comparar con la lista actual':'Cargar';
 }
-var EG=null;
+var EG=null,EBASE=null;
 function erow(m,a){
   var d=document.createElement('div');d.className='erow';d.dataset.plus=m.plus?'1':'';
   d.innerHTML='<input type="text" placeholder="'+(m.plus?'Acompañante (nombre si lo saben)':'Nombre y apellido')+'" value="'+esc(m.plus?(a&&a.name&&a.name!=='Acompañante'?a.name:''):m.name)+'">'
@@ -288,12 +293,11 @@ function erow(m,a){
 }
 function openEdit(id){
   var g=id?D.groups.find(function(x){return x.id===id}):null,r=g&&stats().R[g.id],al=g&&r?align(g.members,r.answers):[];
-  EG=g;$('etitle').textContent=g?'Editar grupo':'Agregar grupo';$('erows').innerHTML='';$('eerr').textContent='';
+  EG=g;EBASE=r?r.updatedAt:null;$('etitle').textContent=g?'Editar grupo':'Agregar grupo';$('erows').innerHTML='';$('eerr').textContent='';
   (g?g.members:[{name:''}]).forEach(function(m,i){erow(m,al[i])});
   $('email').value=r?r.email||'':'';$('enote').value=r&&r.note||'';$('edel').hidden=!g;$('edlg').showModal();
 }
 $('list').addEventListener('click',function(e){var b=e.target.closest('.ed');if(b)openEdit(b.getAttribute('data-id'))});
-$('facts').addEventListener('click',function(e){if(e.target.closest('[data-go]')){[].forEach.call($('chips').children,function(c){c.classList.toggle('on',c.getAttribute('data-f')==='pending')});F='pending';draw();$('list').scrollIntoView({behavior:'smooth'})}});
 $('add').onclick=function(){openEdit(null)};
 $('eadd').onclick=function(){erow({name:''})};
 $('eplus').onclick=function(){erow({name:'',plus:true})};
@@ -307,8 +311,10 @@ $('esave').onclick=function(){
   });
   if(!members.length){$('eerr').textContent='Agrega al menos una persona.';return}
   var b=this;b.disabled=true;
-  call('saveGroup',{id:EG&&EG.id,members:members,answers:answers,email:$('email').value.trim(),note:$('enote').value.trim()}).then(function(j){
-    b.disabled=false;if(!j.ok){$('eerr').textContent=j.detail||'No se pudo guardar.';return}
+  call('saveGroup',{id:EG&&EG.id,base:EBASE,members:members,answers:answers,email:$('email').value.trim(),note:$('enote').value.trim()}).then(function(j){
+    b.disabled=false;
+    if(j.error==='conflict'){var id=EG.id;$('edlg').close();call('data').then(function(x){D=x;draw();openEdit(id);$('eerr').textContent='Este grupo respondió o cambió mientras editabas. Te mostramos lo más reciente: revisa y vuelve a guardar.'});return}
+    if(!j.ok){$('eerr').textContent=j.detail||'No se pudo guardar.';return}
     $('edlg').close();load();
   }).catch(function(e){b.disabled=false;$('eerr').textContent='No se pudo guardar: '+e.message});
 };

@@ -90,6 +90,8 @@ export default async (req) => {
         return { name: m.plus ? String(a.name || '').trim().slice(0, 80) || 'Acompañante' : m.name, attending: a.attending, plus: m.plus };
       }).filter(Boolean);
       const prev = await getDoc('responses', id);
+      // Evita guardar encima: si el invitado respondió (o alguien cambió algo) desde que se abrió "Editar"
+      if (g && (prev ? prev.updatedAt : null) !== (p.base || null)) return json({ ok: false, error: 'conflict' });
       const email = String(p.email || '').trim().slice(0, 200);
       if (email && !validEmail(email)) return json({ ok: false, error: 'invalid', detail: 'Correo no válido.' });
       if (answers.length) {
