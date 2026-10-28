@@ -350,3 +350,6 @@ footer .btn{padding:.6rem 1.1rem;font-size:.6rem}
 body[data-page=inicio] @media(max-width:860px){.know{grid-template-columns:1fr;gap:2.6rem}}
 .s-take .strip p{max-width:17rem;margin:0 auto}
 .s-take .strip .lnk+.lnk{margin-left:.9rem}
+footer .help-link{font-size:.95rem;font-style:italic;color:var(--muted);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;cursor:pointer}
+footer .help-link:hover{color:var(--olive-deep)}
+footer .help-link.soon::after{content:""}
