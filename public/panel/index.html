@@ -107,12 +107,12 @@ dialog select{width:100%;padding:8px;border:1px solid var(--line);background:#ff
   <input type="file" id="file" accept=".xlsx,.xls,.csv" style="margin-top:12px">
   <div id="map" hidden>
     <label>Columna del nombre</label><select id="cName"></select>
-    <label>Columna de acompañante (opcional)</label><select id="cPlus"></select>
+    <label>Columna del apellido (opcional)</label><select id="cLast"></select>
     <p class="note" id="sum"></p>
     <div class="prev" id="prev"></div>
   </div>
   <p class="err" id="uerr"></p>
-  <div class="acts"><button class="btn" id="cancel" type="button">Cancelar</button><button class="btn s" id="go" type="button" disabled>Cargar</button></div>
+  <div class="acts"><button class="btn" id="cancel" type="button">Cancelar</button><button class="btn s" id="go" type="button" disabled>Revisar cambios</button></div>
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -140,11 +140,14 @@ function load(){$('list').innerHTML='<div class="empty">Cargando…</div>';
   call('data').then(function(j){if(!j.ok)throw new Error(j.detail||'error');D=j;draw()})
   .catch(function(e){if(e.message!=='auth')$('list').innerHTML='<div class="empty">No se pudo cargar: '+esc(e.message)+'</div>'})}
 
+function align(members,answers){var left=(answers||[]).slice(),out=[];
+  members.forEach(function(m){var i=-1;for(var k=0;k<left.length;k++){var a=left[k];if(a&&(m.plus?a.plus:(!a.plus&&norm(a.name)===norm(m.name)))){i=k;break}}
+    out.push(i>=0?left.splice(i,1)[0]:null)});return out}
 function stats(){
   var R={};D.responses.forEach(function(r){R[r.id]=r});
   var s={groups:D.groups.length,done:0,yes:0,no:0,pending:0,people:0,R:R};
   D.groups.forEach(function(g){s.people+=g.members.length;var r=R[g.id];
-    if(r){s.done++;r.answers.forEach(function(a){a.attending?s.yes++:s.no++})}else s.pending+=g.members.length});
+    if(r){s.done++;align(g.members,r.answers).forEach(function(a){a?(a.attending?s.yes++:s.no++):s.pending++})}else s.pending+=g.members.length});
   return s;
 }
 function draw(){
@@ -163,7 +166,7 @@ function draw(){
     if(F==='done'&&!r)return;if(F==='pending'&&r)return;if(F==='no'&&!(r&&r.answers.some(function(a){return !a.attending})))return;
     if(q){var h=norm(g.members.map(function(m){return m.name}).join(' ')+' '+(r?r.email+' '+r.answers.map(function(a){return a.name}).join(' '):''));if(h.indexOf(q)<0)return}
     out+='<div class="grp">'+(r?'<div class="meta"><span>'+esc(r.email)+'</span><span>'+new Date(r.updatedAt).toLocaleDateString('es-DO',{day:'numeric',month:'short'})+(r.edited?' · modificado':'')+'</span></div>':'');
-    g.members.forEach(function(m,i){var a=r&&r.answers[i],nm=m.plus?(a&&a.name?a.name+' <span class="plus">(acompañante)</span>':'<span class="plus">Acompañante</span>'):esc(m.name);
+    var al=r?align(g.members,r.answers):[];g.members.forEach(function(m,i){var a=al[i],nm=m.plus?(a&&a.name?a.name+' <span class="plus">(acompañante)</span>':'<span class="plus">Acompañante</span>'):esc(m.name);
       out+='<div class="row"><div>'+nm+'</div><span class="pill '+(a?(a.attending?'y':'n'):'')+'">'+(a?(a.attending?'Asiste':'No asiste'):'Pendiente')+'</span></div>'});
     out+='</div>';
   });
@@ -184,7 +187,7 @@ $('dl').onclick=function(){
       if(gi)rows.push([]);
       var r=s.R[g.id];
       g.members.forEach(function(m,i){
-        var orig=(g.rows||[])[i]||{},a=r&&r.answers[i];
+        var orig=(g.rows||[])[i]||{},a=r?align(g.members,r.answers)[i]:null;
         rows.push(cols.map(function(c){return orig[c]==null?'':orig[c]}).concat([
           a?(a.attending?'Asiste':'No asiste'):'Pendiente', a?a.name:'', r?r.email:'', r?new Date(r.updatedAt).toLocaleString('es-DO'):''
         ]));
@@ -198,7 +201,7 @@ $('dl').onclick=function(){
 
 /* ---- cargar lista ---- */
 var SHEET=null;
-$('up').onclick=function(){$('file').value='';$('map').hidden=true;$('go').disabled=true;$('uerr').textContent='';$('dlg').showModal()};
+$('up').onclick=function(){$('file').value='';$('map').hidden=true;$('go').disabled=true;$('go').textContent='Revisar cambios';CHECKED=false;$('uerr').textContent='';$('dlg').showModal()};
 $('cancel').onclick=function(){$('dlg').close()};
 $('file').onchange=function(){
   var f=this.files[0];if(!f)return;var rd=new FileReader();
@@ -211,22 +214,23 @@ $('file').onchange=function(){
       var head=aoa[hi].map(function(h,i){return String(h).trim()||('Columna '+(i+1))});
       SHEET={head:head,rows:aoa.slice(hi+1)};
       var opts=head.map(function(h,i){return '<option value="'+i+'">'+esc(h)+'</option>'}).join('');
-      $('cName').innerHTML=opts;$('cPlus').innerHTML='<option value="-1">— Ninguna —</option>'+opts;
-      var ni=head.findIndex(function(h){return /nombre|name|invitad/i.test(h)}),pi=head.findIndex(function(h){return /acompa|plus/i.test(h)});
-      $('cName').value=String(ni<0?0:ni);$('cPlus').value=String(pi);
+      $('cName').innerHTML=opts;$('cLast').innerHTML='<option value="-1">— Ninguna —</option>'+opts;
+      var li=head.findIndex(function(h){return /apellido|last|surname/i.test(h)});
+      var ni=head.findIndex(function(h,i){return i!==li&&/nombre|first|name|invitad/i.test(h)});
+      $('cName').value=String(ni<0?0:ni);$('cLast').value=String(li);
       $('map').hidden=false;preview();
     }catch(e){$('uerr').textContent='No se pudo leer el archivo: '+e.message}
   };rd.readAsArrayBuffer(f);
 };
-$('cName').onchange=$('cPlus').onchange=preview;
+$('cName').onchange=$('cLast').onchange=preview;
 function parse(){
-  var ni=+$('cName').value,pi=+$('cPlus').value,groups=[],cur=null;
+  var ni=+$('cName').value,li=+$('cLast').value,groups=[],cur=null;
   SHEET.rows.forEach(function(r){
     var empty=!r.some(function(c){return String(c).trim()});
     if(empty){if(cur&&cur.members.length)groups.push(cur);cur=null;return}
     cur=cur||{members:[],rows:[]};
-    var name=String(r[ni]||'').trim();
-    var plus=!name;
+    var name=(String(r[ni]||'').trim()+' '+(li>=0?String(r[li]||'').trim():'')).replace(/\s+/g,' ').trim();
+    var plus=!name||/^(acompa[nñ]ante|invitado|guest|plus ?one|\+1)$/i.test(name);
     var obj={};SHEET.head.forEach(function(h,i){obj[h]=r[i]==null?'':String(r[i])});
     cur.members.push(plus?{name:'',plus:true}:{name:name});cur.rows.push(obj);
   });
@@ -237,16 +241,34 @@ function preview(){
   var g=parse(),n=g.reduce(function(a,x){return a+x.members.length},0),p=g.reduce(function(a,x){return a+x.members.filter(function(m){return m.plus}).length},0);
   $('sum').textContent=g.length+' grupos · '+n+' personas'+(p?' · '+p+' acompañantes sin nombre':'')+'. Revisa que los grupos se vean bien:';
   $('prev').innerHTML=g.slice(0,40).map(function(x){return '<div>'+x.members.map(function(m){return m.plus?'<i>acompañante</i>':esc(m.name)}).join(' · ')+'</div>'}).join('')+(g.length>40?'<div>… y '+(g.length-40)+' más</div>':'');
-  $('go').disabled=!g.length;
+  $('go').disabled=!g.length;CHECKED=false;$('go').textContent='Revisar cambios';
 }
+var CHECKED=false;
+function li(arr){return arr.slice(0,30).map(function(x){return '<div>'+x+'</div>'}).join('')+(arr.length>30?'<div>… y '+(arr.length-30)+' más</div>':'')}
 $('go').onclick=function(){
-  var b=this;b.disabled=true;b.textContent='Cargando…';$('uerr').textContent='';
+  var b=this;b.disabled=true;$('uerr').textContent='';
+  if(!CHECKED){
+    b.textContent='Revisando…';
+    call('upload',{groups:parse(),columns:SHEET.head,dryRun:true}).then(function(j){
+      b.disabled=false;
+      if(!j.ok){b.textContent='Revisar cambios';$('uerr').textContent='Error: '+(j.detail||j.error);return}
+      var d=j.diff,warn=d.removed.filter(function(x){return x.answered}).length+d.changed.filter(function(x){return x.answered}).length,h='';
+      h+='<div><b>'+d.groups+' grupos · '+d.people+' personas</b></div>';
+      if(d.added.length)h+='<div><b>Nuevos ('+d.added.length+')</b></div>'+li(d.added.map(esc));
+      if(d.changed.length)h+='<div><b>Modificados ('+d.changed.length+')</b></div>'+li(d.changed.map(function(x){return esc(x.before)+' → '+esc(x.after)+(x.answered?' <b style="color:#b0673f">· ya respondió</b>':'')}));
+      if(d.removed.length)h+='<div><b>Se quitan ('+d.removed.length+')</b></div>'+li(d.removed.map(function(x){return esc(x.names)+(x.answered?' <b style="color:#b0673f">· ya respondió (su respuesta se conserva, pero no se verá)</b>':'')}));
+      if(!d.added.length&&!d.changed.length&&!d.removed.length)h+='<div>No hay cambios respecto a la lista actual.</div>';
+      $('sum').textContent=warn?'Atención: hay cambios en grupos que ya respondieron. Revisa antes de confirmar.':'Revisa los cambios y confirma:';
+      $('prev').innerHTML=h;CHECKED=true;b.textContent='Confirmar carga';
+    }).catch(function(e){b.disabled=false;b.textContent='Revisar cambios';$('uerr').textContent='No se pudo revisar: '+e.message});
+    return;
+  }
+  b.textContent='Cargando…';
   call('upload',{groups:parse(),columns:SHEET.head}).then(function(j){
-    b.textContent='Cargar';
-    if(!j.ok){b.disabled=false;$('uerr').textContent='Error: '+(j.detail||j.error);return}
+    if(!j.ok){b.disabled=false;b.textContent='Confirmar carga';$('uerr').textContent='Error: '+(j.detail||j.error);return}
     $('dlg').close();load();
-    alert(j.groups+' grupos cargados'+(j.removed?' · '+j.removed+' grupos eliminados de la lista':'')+'.');
-  }).catch(function(e){b.disabled=false;b.textContent='Cargar';$('uerr').textContent='No se pudo cargar: '+e.message});
+    alert('Lista cargada: '+j.diff.groups+' grupos, '+j.diff.people+' personas.');
+  }).catch(function(e){b.disabled=false;b.textContent='Confirmar carga';$('uerr').textContent='No se pudo cargar: '+e.message});
 };
 
 if(TK)start();else logout();

@@ -155,8 +155,9 @@ box.addEventListener('submit',function(e){
     var le=document.getElementById('rs-le').value.trim();
     api('unlock',{id:S.group.id,email:le}).then(function(r){
       if(r&&r.ok){var resp=r.response||{answers:[]};S.email=le;
-        S.ans=S.group.members.map(function(m,i){var a=(resp.answers||[])[i];return a?a.attending:null});
-        S.names=S.group.members.map(function(m,i){var a=(resp.answers||[])[i];return(a&&a.name)||m.name||''});
+        var left=(resp.answers||[]).slice(),al=S.group.members.map(function(m){for(var k=0;k<left.length;k++){var x=left[k];if(x&&(m.plus?x.plus:(!x.plus&&norm(x.name)===norm(m.name))))return left.splice(k,1)[0]}return null});
+        S.ans=al.map(function(a){return a?a.attending:null});
+        S.names=S.group.members.map(function(m,i){return(al[i]&&al[i].name)||m.name||''});
         S.view='form';render();focusSoon('.seg input')}
       else{S.lockMsg=t(r&&r.error==='rate'?'rate':'badEmail');document.getElementById('rs-lm').textContent=S.lockMsg}
     }).catch(function(){S.lockMsg=t('err');document.getElementById('rs-lm').textContent=S.lockMsg});

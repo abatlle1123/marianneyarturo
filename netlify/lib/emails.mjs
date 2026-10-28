@@ -1,5 +1,5 @@
 // Plantillas de correo. Tablas y estilos en línea para que se vean igual en Gmail, Outlook y Apple Mail.
-import { EVENT, esc, groupLabel } from './core.mjs';
+import { EVENT, esc, groupLabel, alignAnswers } from './core.mjs';
 
 const C = { bg: '#f3f1ed', card: '#fbfaf7', ink: '#3d4636', deep: '#3f4b36', olive: '#56654b', muted: '#6c7563', line: '#d9dccf', no: '#8f8478' };
 const serif = "'Cormorant Garamond',Georgia,'Times New Roman',serif";
@@ -98,7 +98,7 @@ export function totalsOf(groups, responses) {
   let yes = 0, no = 0, pending = 0, groupsDone = 0;
   for (const g of groups) {
     const r = R.get(g.id);
-    if (r) { groupsDone++; r.answers.forEach(a => a.attending ? yes++ : no++); }
+    if (r) { groupsDone++; alignAnswers(g.members, r.answers).forEach(a => a ? (a.attending ? yes++ : no++) : pending++); }
     else pending += g.members.length;
   }
   const daysLeft = Math.max(0, Math.ceil((new Date(EVENT.deadline) - Date.now()) / 864e5));

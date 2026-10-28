@@ -20,7 +20,7 @@ export default async (req) => {
         const toks = norm(g.members.map(m => m.name).join(' ')).split(' ');
         return words.every(w => toks.some(t => t.startsWith(w)));
       });
-      if (hits.length > 5) return json({ groups: [], error: 'many' });
+      if (hits.length > 8) return json({ groups: [], error: 'many' });
       const done = await Promise.all(hits.map(g => getDoc('responses', g.id)));
       return json({ groups: hits.map((g, i) => publicGroup(g, done[i])) });
     }

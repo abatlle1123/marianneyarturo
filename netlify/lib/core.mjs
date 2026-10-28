@@ -156,3 +156,14 @@ export function samePassword(p) {
   const a = Buffer.from(String(p || '')), b = Buffer.from(String(process.env.ADMIN_PASSWORD || ''));
   return b.length > 0 && a.length === b.length && crypto.timingSafeEqual(a, b);
 }
+
+// Alinea las respuestas guardadas con los miembros actuales del grupo (por nombre; acompañantes por orden).
+// Si la lista cambió después de confirmar, las personas nuevas quedan sin respuesta (pendientes).
+export function alignAnswers(members, answers) {
+  const left = [...(answers || [])], out = [];
+  for (const m of members) {
+    let i = m.plus ? left.findIndex(a => a && a.plus) : left.findIndex(a => a && !a.plus && norm(a.name) === norm(m.name));
+    out.push(i >= 0 ? left.splice(i, 1)[0] : null);
+  }
+  return out;
+}
