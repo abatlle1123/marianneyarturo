@@ -16,10 +16,13 @@ export default async (req) => {
       const words = norm(p.q).split(' ').filter(Boolean);
       if (words.join('').length < 3) return json({ groups: [], error: 'short' });
       const all = await groups();
-      const hits = all.filter(g => {
-        const toks = norm(g.members.map(m => m.name).join(' ')).split(' ');
-        return words.every(w => toks.some(t => t.startsWith(w)));
-      });
+      // 1) Coincidencia de frase: lo escrito aparece seguido dentro del nombre de UNA persona
+      //    ("maria del mar" → solo María del Mar…). 2) Si no hay, todas las palabras en la misma persona,
+      //    en cualquier orden ("camilo maria"). Nunca mezcla palabras de personas distintas del grupo.
+      const phrase = ' ' + words.join(' ');
+      const person = (g, test) => g.members.some(m => !m.plus && test(norm(m.name)));
+      let hits = all.filter(g => person(g, n => (' ' + n).includes(phrase)));
+      if (!hits.length) hits = all.filter(g => person(g, n => { const toks = n.split(' '); return words.every(w => toks.some(t => t.startsWith(w))); }));
       if (hits.length > 8) return json({ groups: [], error: 'many' });
       const done = await Promise.all(hits.map(g => getDoc('responses', g.id)));
       return json({ groups: hits.map((g, i) => publicGroup(g, done[i] && done[i].email)) });
