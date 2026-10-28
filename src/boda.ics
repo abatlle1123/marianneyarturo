@@ -1,0 +1,16 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//marianneyarturo.com//RSVP//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:boda-marianne-arturo-20270305@marianneyarturo.com
+DTSTAMP:20261028T120000Z
+DTSTART:20270305T223000Z
+DTEND:20270306T050000Z
+SUMMARY:Boda de Marianne y Arturo
+LOCATION:Iglesia y Convento Regina Angelorum\, Zona Colonial\, Santo Domingo
+DESCRIPTION:Ceremonia 6:30 pm · Iglesia y Convento Regina Angelorum\nRecepción 9:00 pm · Santo Domingo Country Club\, Country Garden\nVestimenta: Formal garden attire / Chacabana\nhttps://marianneyarturo.com
+URL:https://marianneyarturo.com
+END:VEVENT
+END:VCALENDAR

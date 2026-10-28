@@ -1,0 +1,49 @@
+[build]
+  publish = "public"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+[[headers]]
+  for = "/panel/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
+
+[[redirects]]
+  from = "/itinerario"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/vestimenta"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/viajar"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/lista"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/rsvp"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,298 @@
+<nav class="top">
+  <a class="mono" href="/" data-route="inicio" aria-label="Inicio">M<span>&amp;</span>A</a>
+  <ul id="menu">
+    <li><a href="/" data-route="inicio" data-en="Home">Inicio</a></li>
+    <li><a href="/itinerario" data-route="itinerario" data-en="Itinerary">Itinerario</a></li>
+    <li><a href="/vestimenta" data-route="vestimenta" data-en="Dress code">Vestimenta</a></li>
+    <li><a href="/viajar" data-route="viajar" data-en="Travel">Viajar</a></li>
+    <li><a href="/lista" data-route="lista" data-en="Registry">Lista de boda</a></li>
+    <li><a href="/rsvp" data-route="rsvp">RSVP</a></li>
+  </ul>
+  <button class="lang" id="lang" aria-label="Cambiar idioma / Switch language">EN</button>
+</nav>
+
+<main id="main">
+
+<!-- ======================= INICIO ======================= -->
+<div class="page p-inicio" data-page="inicio">
+  <header class="hero">
+    <div class="hero-grid wrap">
+      <div class="hero-text">
+        <h1 class="names">Marianne <span class="amp">&amp;</span> Arturo</h1>
+        <div class="date">
+          <span data-en="Friday · March 5 · 2027">Viernes · 5 de marzo · 2027</span>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><use href="#floret"/></svg>
+          <span>Santo Domingo, R.D.</span>
+        </div>
+        <p class="countdown" id="countdown" aria-live="off"></p>
+      </div>
+      <div class="hero-art">
+        <div class="arch-wrap">
+          <div class="arch">
+            <!-- FOTO: para cambiarla, reemplaza assets/hero.jpg y assets/hero.webp -->
+            <img class="pic" src="assets/hero.jpg" alt="Marianne y Arturo" width="900" height="1117" fetchpriority="high" decoding="async">
+          </div>
+          <svg class="spray l" viewBox="0 0 303 319" aria-hidden="true"><use href="#spray"/></svg>
+          <svg class="spray r" viewBox="0 0 303 319" aria-hidden="true"><use href="#spray"/></svg>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="tiles-sec">
+    <div class="wrap">
+      <p class="kick" data-en="Wedding details">Detalles de la boda</p>
+      <ul class="tiles">
+        <li><a class="tile" href="/itinerario" data-route="itinerario"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#ic-church"/></svg><span class="tl" data-en="Itinerary">Itinerario</span><span class="ts" data-en="Ceremony &amp; reception">Ceremonia y recepción</span></a></li>
+        <li><a class="tile" href="/vestimenta" data-route="vestimenta"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#ic-hanger"/></svg><span class="tl" data-en="Dress code">Vestimenta</span><span class="ts">Formal garden attire</span></a></li>
+        <li><a class="tile" href="/viajar" data-route="viajar"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#ic-travel"/></svg><span class="tl" data-en="Travel">Viajar</span><span class="ts" data-en="Hotels, food &amp; tips">Hoteles, comida y datos</span></a></li>
+        <li><a class="tile" href="/lista" data-route="lista"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#ic-gift"/></svg><span class="tl" data-en="Registry">Lista de boda</span><span class="ts" data-en="Gifts">Regalos</span></a></li>
+        <li><a class="tile" href="/rsvp" data-route="rsvp"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#ic-envelope"/></svg><span class="tl">RSVP</span><span class="ts" data-en="Confirm attendance">Confirma tu asistencia</span></a></li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<!-- ======================= ITINERARIO ======================= -->
+<div class="page p-itin" data-page="itinerario" data-title="Itinerario" data-title-en="Itinerary" hidden>
+<section class="sec s-itin">
+  <div class="head reveal">
+    <p class="kick" data-en="Friday, March 5, 2027">Viernes 5 de marzo de 2027</p>
+    <h2 data-en="Itinerary">Itinerario</h2>
+    <svg class="div" viewBox="0 0 252 27" aria-hidden="true"><use href="#divider"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="itin">
+      <figure class="scene-wrap fig-a reveal"><img src="assets/ill/iglesia.svg" alt="Dibujo de la Iglesia y Convento Regina Angelorum" width="860" height="540" loading="lazy" decoding="async"></figure>
+      <div class="stop stop-a reveal">
+        <p class="kick" data-en="I · Ceremony">I · Ceremonia</p>
+        <h3>Iglesia y Convento Regina Angelorum</h3>
+        <p class="where" data-en="Colonial Zone">Zona Colonial</p>
+        <div class="time">6:30<small>PM</small></div>
+        <p data-en="Please arrive a little early so we can begin on time.">Te pedimos llegar con un poco de antelación para comenzar a tiempo.</p>
+        <a class="lnk" href="https://maps.app.goo.gl/jbknbqBVAuYkyLWp8?g_st=ic" target="_blank" rel="noopener" data-en="View on map">Ver en el mapa</a>
+      </div>
+      <div class="walkway reveal" aria-hidden="true"><img src="assets/ill/camino.svg" alt="" width="600" height="180" loading="lazy" decoding="async"></div>
+      <div class="stop stop-b reveal">
+        <p class="kick" data-en="II · Reception">II · Recepción</p>
+        <h3>Santo Domingo Country Club</h3>
+        <p class="where">Country Garden</p>
+        <div class="time">9:00<small>PM</small></div>
+        <a class="lnk" data-link="receptionMap" data-en="View on map">Ver en el mapa</a>
+      </div>
+      <figure class="scene-wrap fig-b reveal"><img src="assets/ill/country-garden.svg" alt="Dibujo de la carpa del Country Garden con luces colgantes" width="800" height="488" loading="lazy" decoding="async"></figure>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ======================= VESTIMENTA ======================= -->
+<div class="page p-vest" data-page="vestimenta" data-title="Vestimenta" data-title-en="Dress code" hidden>
+<section class="sec s-vest">
+  <svg class="corner" viewBox="0 0 303 319" aria-hidden="true"><use href="#spray"/></svg>
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="kick" data-en="Dress code">Vestimenta</p>
+      <h2>Formal <em>garden</em> attire</h2>
+      <svg class="div" viewBox="0 0 252 27" aria-hidden="true"><use href="#divider"/></svg>
+    </div>
+    <div class="garments">
+      <article class="garment reveal">
+        <svg viewBox="0 0 184 310" preserveAspectRatio="xMidYMin slice" role="img" aria-label="Dibujo de una chacabana"><use href="#chacabana"/></svg>
+        <p class="kick" data-en="Gentlemen">Caballeros</p>
+        <h3>Chacabana</h3>
+        <p data-en="The traditional Dominican shirt, similar to a guayabera: light, in linen or cotton.">La camisa tradicional dominicana, parecida a una guayabera: ligera, de lino o algodón.</p>
+        <details class="more">
+          <summary class="lnk" data-en="Where to get one">Dónde conseguirla</summary>
+          <div class="more-in">
+            <p class="kick" data-en="We recommend">Te recomendamos</p>
+            <h4>Tony Boga</h4>
+            <a class="lnk sm" href="https://www.google.com/maps/search/?api=1&query=Tony+Boga+Santo+Domingo" target="_blank" rel="noopener" data-en="View on map">Ver en el mapa</a>
+          </div>
+        </details>
+      </article>
+      <article class="garment reveal">
+        <svg viewBox="0 0 165 346" role="img" aria-label="Dibujo de un vestido largo"><use href="#dress"/></svg>
+        <p class="kick" data-en="Ladies">Damas</p>
+        <h3 data-en="Long dress">Vestido largo</h3>
+        <p data-en="A long, fresh dress in spring colors. We suggest comfortable shoes, such as block heels or platforms.">Vestido largo, fresco y en colores primaverales. Te sugerimos calzado cómodo, como tacón grueso o plataformas.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="band s-beauty" aria-label="Maquillaje y peinado">
+  <div class="wrap band-in">
+    <div class="band-title reveal">
+      <p class="kick" data-en="For the ladies">Para ellas</p>
+      <h3 data-en="Hair &amp; makeup">Maquillaje y peinado</h3>
+      <p data-en="Our recommended artists.">Nuestras recomendadas.</p>
+    </div>
+    <ul class="strip reveal">
+      <li><h4>Zoe Marie Beauty</h4><span class="role" data-en="Hair &amp; makeup">Maquillaje y peinado</span><a class="lnk" href="https://www.instagram.com/zoemarie.beauty/" target="_blank" rel="noopener">@zoemarie.beauty</a></li>
+      <li><h4>Ana Gabriela Elías</h4><span class="role" data-en="Makeup">Maquillaje</span><a class="lnk" href="https://www.instagram.com/anaelias.makeup/" target="_blank" rel="noopener">@anaelias.makeup</a></li>
+      <li><h4>Montibello</h4><span class="role" data-en="Hair &amp; makeup">Maquillaje y peinado</span><a class="lnk" href="https://www.instagram.com/montibellohairloungerd/" target="_blank" rel="noopener">@montibellohairloungerd</a></li>
+    </ul>
+  </div>
+</section>
+</div>
+
+<!-- ======================= VIAJAR ======================= -->
+<div class="page p-viajar" data-page="viajar" data-title="Viajar" data-title-en="Travel" hidden>
+<section class="sec s-viajar">
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="kick" data-en="For our guests from abroad">Para quienes vienen de fuera</p>
+      <h2 data-en="Traveling to <em>Santo Domingo</em>">Viajar a <em>Santo Domingo</em></h2>
+      <svg class="div" viewBox="0 0 252 27" aria-hidden="true"><use href="#divider"/></svg>
+      <p data-en="Everything you need to arrive relaxed and enjoy the weekend.">Todo para que llegues tranquilo y disfrutes el fin de semana.</p>
+    </div>
+
+    <div class="arrive reveal">
+      <p class="kick" data-en="Getting here">Cómo llegar</p>
+      <h3 data-en="Fly into <em>SDQ</em>">Aterriza en <em>SDQ</em></h3>
+      <p data-en="Las Américas International Airport is the closest to the city, about 30 minutes from the Colonial Zone. We recommend booking your airport transfer ahead of time.">El Aeropuerto Internacional Las Américas es el más cercano a la ciudad, a unos 30 minutos de la Zona Colonial. Te recomendamos reservar tu traslado con anticipación.</p>
+      <details class="more">
+        <summary class="lnk" data-en="Transportation options">Opciones de transporte</summary>
+        <div class="ticket">
+          <div class="row"><span class="tk"><b>SDQ</b> → Santo Domingo</span><span class="tk" data-en="Transfer">Traslado</span></div>
+          <div class="big">Seven Stars</div>
+          <span class="tk" data-en="Recommended transportation">Transporte recomendado</span>
+          <hr>
+          <p data-en="Airport transfers (also if you arrive through another airport) and rides within the city, including to the church and the reception.">Traslados desde el aeropuerto (también si llegas por otro aeropuerto) y movimientos dentro de la ciudad, incluso a la iglesia y la recepción.</p>
+          <a class="btn solid" data-wa="transport" data-en="Message on WhatsApp">Escribir por WhatsApp</a>
+        </div>
+      </details>
+    </div>
+
+    <h3 class="sub reveal" data-en="Where to stay">Dónde quedarse</h3>
+    <p class="subp reveal" data-en="Three areas we love, each with its own charm.">Tres zonas que nos encantan, cada una con su encanto.</p>
+    <div class="hotels">
+      <article class="hotel reveal">
+        <div class="ph"><img src="assets/ill/hotel-embajador.svg" alt="Dibujo del Hotel El Embajador" width="300" height="375" loading="lazy" decoding="async"></div>
+        <h4>Hotel Embajador</h4><p class="zone">Bella Vista</p>
+        <a class="lnk" href="https://www.google.com/maps/search/?api=1&query=Hotel+Embajador+Santo+Domingo" target="_blank" rel="noopener" data-en="View on map">Ver en el mapa</a>
+      </article>
+      <article class="hotel reveal">
+        <div class="ph"><img src="assets/ill/hotel-kimpton.svg" alt="Dibujo del patio del Kimpton Las Mercedes" width="300" height="375" loading="lazy" decoding="async"></div>
+        <h4>Kimpton Las Mercedes</h4><p class="zone" data-en="Colonial Zone">Zona Colonial</p>
+        <a class="lnk" href="https://www.google.com/maps/search/?api=1&query=Kimpton+Las+Mercedes+Santo+Domingo" target="_blank" rel="noopener" data-en="View on map">Ver en el mapa</a>
+      </article>
+      <article class="hotel reveal">
+        <div class="ph"><img src="assets/ill/hotel-jw-marriott.svg" alt="Dibujo del JW Marriott sobre Blue Mall" width="300" height="375" loading="lazy" decoding="async"></div>
+        <h4>JW Marriott</h4><p class="zone">Piantini</p>
+        <a class="lnk" href="https://www.google.com/maps/search/?api=1&query=JW+Marriott+Santo+Domingo" target="_blank" rel="noopener" data-en="View on map">Ver en el mapa</a>
+      </article>
+    </div>
+
+    <h3 class="sub reveal" data-en="Where to eat">Dónde comer</h3>
+    <p class="subp reveal" data-en="Our favorite tables.">Nuestras mesas favoritas.</p>
+    <div class="menu reveal">
+      <svg class="olive" viewBox="0 0 319 68" aria-hidden="true"><use href="#olive"/></svg>
+      <p class="kick" data-en="Marianne &amp; Arturo recommend">Marianne y Arturo recomiendan</p>
+      <ul>
+        <li><a class="nm" href="https://www.google.com/maps/search/?api=1&query=Il+Bacareto+Santo+Domingo" target="_blank" rel="noopener">Il Bacareto</a><span class="dots"></span><span class="zn" data-en="Italian">Italiano</span></li>
+        <li><a class="nm" href="https://www.google.com/maps/search/?api=1&query=Nau+Sushi+Lounge+Santo+Domingo" target="_blank" rel="noopener">Nau Sushi Lounge</a><span class="dots"></span><span class="zn" data-en="Japanese">Japonés</span></li>
+        <li><a class="nm" href="https://www.google.com/maps/search/?api=1&query=Okazu+Santo+Domingo" target="_blank" rel="noopener">Okazu</a><span class="dots"></span><span class="zn" data-en="Nordic-Japanese">Nórdico-japonés</span></li>
+        <li><a class="nm" href="https://www.google.com/maps/search/?api=1&query=Casa+Brava+Santo+Domingo" target="_blank" rel="noopener">Casa Brava</a><span class="dots"></span><span class="zn" data-en="Spanish">Español</span></li>
+        <li><a class="nm" href="https://www.google.com/maps/search/?api=1&query=Il+Caminetto+Santo+Domingo" target="_blank" rel="noopener">Il Caminetto</a><span class="dots"></span><span class="zn" data-en="Pizza">Pizza</span></li>
+        <li><a class="nm" href="https://www.google.com/maps/search/?api=1&query=Vuelve+a+la+Vida+Mar+Boca+Chica" target="_blank" rel="noopener">Vuelve a la Vida Mar</a><span class="dots"></span><span class="zn" data-en="Seafood · Boca Chica beach">Mariscos · playa de Boca Chica</span></li>
+      </ul>
+      <p class="fine" data-en="Tap a name to open it on the map.">Toca un nombre para abrirlo en el mapa.</p>
+    </div>
+  </div>
+
+  <div class="band s-take">
+    <div class="wrap band-in">
+      <div class="band-title reveal">
+        <p class="kick" data-en="Take home">Para llevar</p>
+        <h3 data-en="A little piece of DR">Un pedacito de RD</h3>
+        <p data-en="What we recommend bringing back.">Lo que te recomendamos llevar de regreso.</p>
+      </div>
+      <ul class="strip reveal">
+        <li><div class="ico"><svg viewBox="0 0 92 152" aria-hidden="true"><use href="#rum"/></svg></div><div><h4 data-en="Rum">Ron</h4><p data-en="A Dominican añejo: Brugal 1888 or E. León Jiménez 110th Anniversary. Available at supermarkets and liquor stores.">Un añejo dominicano: Brugal 1888 o E. León Jiménez 110 Aniversario. Disponible en supermercados y tiendas de licor.</p></div></li>
+        <li><div class="ico"><svg viewBox="0 0 122 85" aria-hidden="true"><use href="#cigar"/></svg></div><div><h4 data-en="Cigars">Cigarros</h4><p data-en="Hand-rolled on the island. We recommend Arturo Fuente Cigar Club.">Hechos a mano en la isla. Te recomendamos Arturo Fuente Cigar Club.</p><a class="lnk" href="https://www.google.com/maps/search/?api=1&query=Arturo+Fuente+Cigar+Club+Santo+Domingo" target="_blank" rel="noopener" data-en="View on map">Ver en el mapa</a></div></li>
+        <li><div class="ico"><svg viewBox="0 0 86 159" aria-hidden="true"><use href="#cacao"/></svg></div><div><h4>Cacao</h4><p data-en="Local cacao and chocolate at Kah Kow, Blue Mall or Colonial Zone.">Cacao y chocolate local en Kah Kow, Blue Mall o Zona Colonial.</p><a class="lnk" href="https://www.google.com/maps/search/?api=1&query=Kah+Kow+Blue+Mall+Santo+Domingo" target="_blank" rel="noopener">Blue Mall</a><a class="lnk" href="https://www.google.com/maps/search/?api=1&query=Kah+Kow+Experience+Zona+Colonial+Santo+Domingo" target="_blank" rel="noopener" data-en="Colonial Zone">Zona Colonial</a></div></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <h3 class="sub reveal" data-en="Good to know">Bueno saber</h3>
+    <div class="know reveal">
+      <div><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#ic-sun"/></svg><h4 data-en="Weather">Clima</h4><p data-en="March is warm and mostly dry: about 30 °C by day, with pleasant evenings.">Marzo es cálido y mayormente seco: unos 30 °C de día y noches agradables.</p></div>
+      <div><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#ic-bag"/></svg><h4 data-en="What to pack">Qué empacar</h4><p data-en="Light fabrics, sunscreen and comfortable shoes.">Telas ligeras, protector solar y zapatos cómodos.</p></div>
+      <div><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#ic-coin"/></svg><h4 data-en="Practical details">Datos prácticos</h4><p data-en="Dominican peso (DOP); cards widely accepted. 110V, same plugs as the US. Check entry requirements for your nationality.">Peso dominicano (DOP); tarjetas ampliamente aceptadas. 110V, mismos enchufes que en EE. UU. Revisa los requisitos de entrada según tu nacionalidad.</p></div>
+    </div>
+    <div class="help reveal">
+      <p data-en="Questions while you plan or travel? Write to us.">¿Dudas al planear o durante el viaje? Escríbenos.</p>
+      <a class="btn" data-wa="help" data-en="Guest assistance on WhatsApp">Asistencia para invitados</a>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ======================= LISTA DE BODA ======================= -->
+<div class="page p-lista" data-page="lista" data-title="Lista de boda" data-title-en="Registry" hidden>
+<section class="sec s-lista">
+  <svg class="corner" viewBox="0 0 303 319" aria-hidden="true"><use href="#spray"/></svg>
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="kick" data-en="Registry">Lista de boda</p>
+      <h2 data-en="With <em>gratitude</em>">Con <em>gratitud</em></h2>
+      <svg class="div" viewBox="0 0 252 27" aria-hidden="true"><use href="#divider"/></svg>
+      <p data-en="Your presence is our best gift. If you'd like to give something more, you'll find our lists here.">Tu presencia es nuestro mejor regalo. Si quieres tener un detalle, aquí están nuestras listas.</p>
+    </div>
+    <div class="reg">
+      <article class="reveal">
+        <p class="kick" data-en="Registry">Lista</p>
+        <h3>Casa Cuesta</h3>
+        <a class="btn" data-link="registryCasaCuesta" data-en="View registry">Ver lista</a>
+      </article>
+      <article class="reveal">
+        <p class="kick" data-en="Registry">Lista</p>
+        <h3>Le Tavole</h3>
+        <a class="btn" data-link="registryLeTavole" data-en="View registry">Ver lista</a>
+      </article>
+      <article class="reveal bank">
+        <p class="kick" data-en="Contribution">Aporte</p>
+        <h3 data-en="Bank transfer">Transferencia bancaria</h3>
+        <details>
+          <summary class="btn" data-en="View details">Ver datos</summary>
+          <dl>
+            <dt data-en="Bank">Banco</dt><dd>Scotiabank</dd>
+            <dt data-en="Account holder">Titular</dt><dd>Arturo de Jesús Batlle Matías</dd>
+            <dt data-en="ID (cédula)">Cédula</dt><dd>402-2435193-8</dd>
+            <dt data-en="Savings · DOP">Ahorros · DOP</dt><dd><span>52579634971</span><button type="button" class="cp" data-en="Copy">Copiar</button></dd>
+            <dt data-en="Savings · USD">Ahorros · USD</dt><dd><span>52579786586</span><button type="button" class="cp" data-en="Copy">Copiar</button></dd>
+          </dl>
+        </details>
+      </article>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ======================= RSVP ======================= -->
+<div class="page p-rsvp" data-page="rsvp" data-title="RSVP" data-title-en="RSVP" hidden>
+<section class="sec s-rsvp">
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="kick" data-en="Kindly reply">Confirma tu asistencia</p>
+      <h2>RSVP</h2>
+      <svg class="div" viewBox="0 0 252 27" aria-hidden="true"><use href="#divider"/></svg>
+      <p id="rs-sub" data-en="Search for your name to find your group's reservation, then confirm each guest.">Busca tu nombre para encontrar la reserva de tu grupo y confirma a cada invitado.</p>
+    </div>
+    <div class="rsvp-box reveal" id="rsvp-box" aria-live="polite"></div>
+  </div>
+</section>
+</div>
+
+</main>
+
+<footer>
+  <svg class="olive" viewBox="0 0 319 68" aria-hidden="true"><use href="#olive"/></svg>
+  <div class="names2">Marianne <span class="amp">&amp;</span> Arturo</div>
+  <p>05 · 03 · 2027 · Santo Domingo</p>
+  <a class="btn" data-wa="help" data-en="Guest assistance on WhatsApp">Asistencia para invitados</a>
+</footer>
