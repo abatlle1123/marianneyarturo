@@ -1,15 +1,19 @@
 <nav class="top">
+  <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Menú"><span></span><span></span><span></span></button>
   <a class="mono" href="/" data-route="inicio" aria-label="Inicio">M<span>&amp;</span>A</a>
-  <ul id="menu">
-    <li><a href="/" data-route="inicio" data-en="Home">Inicio</a></li>
-    <li><a href="/itinerario" data-route="itinerario" data-en="Itinerary">Itinerario</a></li>
-    <li><a href="/vestimenta" data-route="vestimenta" data-en="Dress code">Vestimenta</a></li>
-    <li><a href="/viajar" data-route="viajar" data-en="Travel">Viajar</a></li>
-    <li><a href="/lista" data-route="lista" data-en="Registry">Lista de boda</a></li>
-    <li><a href="/rsvp" data-route="rsvp">RSVP</a></li>
-  </ul>
   <button class="lang" id="lang" aria-label="Cambiar idioma / Switch language">EN</button>
 </nav>
+<div class="drawer" id="drawer" aria-hidden="true">
+  <ul id="menu">
+    <li><a href="/" data-route="inicio"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#floret"/></svg><span data-en="Home">Inicio</span></a></li>
+    <li><a href="/itinerario" data-route="itinerario"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#ic-church"/></svg><span data-en="Itinerary">Itinerario</span></a></li>
+    <li><a href="/vestimenta" data-route="vestimenta"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#ic-hanger"/></svg><span data-en="Dress code">Vestimenta</span></a></li>
+    <li><a href="/viajar" data-route="viajar"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#ic-travel"/></svg><span data-en="Travel">Viajar</span></a></li>
+    <li><a href="/lista" data-route="lista"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#ic-gift"/></svg><span data-en="Registry">Lista de boda</span></a></li>
+    <li><a href="/rsvp" data-route="rsvp"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#ic-envelope"/></svg><span>RSVP</span></a></li>
+  </ul>
+</div>
+<div class="scrim" id="scrim"></div>
 
 <main id="main">
 
