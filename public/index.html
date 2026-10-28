@@ -398,6 +398,8 @@ nav.top .lang{justify-self:end}
 #menu a:hover{background:var(--sage-pale)}
 #menu a.active{border-left-color:var(--olive);background:var(--sage-pale)}
 @media(prefers-reduced-motion:reduce){.drawer,.scrim,.burger span{transition:none}}
+.rs-search input::placeholder{font-size:1.08rem}
+@media(max-width:480px){.rs-search input{font-size:1.1rem}.rs-search input::placeholder{font-size:1.02rem}.rs-search .btn{padding:.65rem 1rem}}
 </style>
 </head>
 <body>
@@ -697,7 +699,7 @@ nav.top .lang{justify-self:end}
       <p class="kick" data-en="Kindly reply">Confirma tu asistencia</p>
       <h2>RSVP</h2>
       <svg class="div" viewBox="0 0 252 27" aria-hidden="true"><use href="#divider"/></svg>
-      <p id="rs-sub" data-en="Search for your name to find your group's reservation, then confirm each guest.">Busca tu nombre para encontrar la reserva de tu grupo y confirma a cada invitado.</p>
+      <p id="rs-sub" data-en="Search with your first name and last name to find your group's reservation.">Busca con tu primer nombre y primer apellido para encontrar la reserva de tu grupo.</p>
     </div>
     <div class="rsvp-box reveal" id="rsvp-box" aria-live="polite"></div>
   </div>
@@ -799,8 +801,8 @@ var DEMO_GROUPS=[
 function label(g,names){var n=g.members.map(function(m,i){return (names&&names[i])||m.name||t('plusTag').toLowerCase()});
   return n.length<2?(n[0]||''):n.slice(0,-1).join(', ')+(isEn?' and ':' y ')+n[n.length-1]}
 var T={
- es:{ph:'Escribe tu nombre o apellido',go:'Buscar',lbl:'Nombre o apellido',min:'Escribe al menos 3 letras.',busy:'Buscando…',
-  none:'No encontramos ese nombre. Revisa cómo lo escribiste o escríbenos por WhatsApp.',err:'No pudimos conectar. Inténtalo de nuevo en un momento.',
+ es:{ph:'Primer nombre y primer apellido',go:'Buscar',lbl:'Nombre o apellido',min:'Escribe al menos 3 letras.',busy:'Buscando…',
+  none:'No encontramos ese nombre. Prueba solo con tu primer nombre y primer apellido, o escríbenos por WhatsApp.',err:'No pudimos conectar. Inténtalo de nuevo en un momento.',
   found:function(n){return n==1?'Encontramos 1 grupo. Elígelo para continuar:':'Encontramos '+n+' grupos. Elige el tuyo:'},
   seats:function(n){return n==1?'1 lugar reservado':n+' lugares reservados'},conf:'Confirmado',
   kick:'Reserva',guest:'Invitado',yes:'Asistirá',no:'No asistirá',plusName:'Nombre del acompañante',plusPh:'Nombre y apellido',plusTag:'Acompañante',
@@ -810,8 +812,8 @@ var T={
   change:'Modificar respuesta',
   lockTitle:'Este grupo ya confirmó',lockText:'Para modificar la respuesta, escribe el correo que usaste al confirmar.',unlock:'Continuar',badEmail:'Ese correo no coincide con el de la confirmación.',
   soon:'La confirmación de asistencia abrirá pronto.',closed:'La confirmación de asistencia ya cerró. Si necesitas confirmar o hacer algún cambio, escríbenos por WhatsApp.'},
- en:{ph:'Type your first or last name',go:'Search',lbl:'First or last name',min:'Type at least 3 letters.',busy:'Searching…',
-  none:'We couldn\'t find that name. Check the spelling or message us on WhatsApp.',err:'We couldn\'t connect. Please try again in a moment.',
+ en:{ph:'First name and last name',go:'Search',lbl:'First or last name',min:'Type at least 3 letters.',busy:'Searching…',
+  none:'We couldn\'t find that name. Try just your first name and last name, or message us on WhatsApp.',err:'We couldn\'t connect. Please try again in a moment.',
   found:function(n){return n==1?'We found 1 group. Select it to continue:':'We found '+n+' groups. Select yours:'},
   seats:function(n){return n==1?'1 seat reserved':n+' seats reserved'},conf:'Confirmed',
   kick:'Reservation',guest:'Guest',yes:'Attending',no:'Not attending',plusName:'Guest\'s name',plusPh:'First and last name',plusTag:'Plus one',

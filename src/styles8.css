@@ -367,3 +367,5 @@ nav.top .lang{justify-self:end}
 #menu a:hover{background:var(--sage-pale)}
 #menu a.active{border-left-color:var(--olive);background:var(--sage-pale)}
 @media(prefers-reduced-motion:reduce){.drawer,.scrim,.burger span{transition:none}}
+.rs-search input::placeholder{font-size:1.08rem}
+@media(max-width:480px){.rs-search input{font-size:1.1rem}.rs-search input::placeholder{font-size:1.02rem}.rs-search .btn{padding:.65rem 1rem}}
