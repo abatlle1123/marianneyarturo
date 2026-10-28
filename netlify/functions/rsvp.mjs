@@ -22,7 +22,7 @@ export default async (req) => {
       });
       if (hits.length > 8) return json({ groups: [], error: 'many' });
       const done = await Promise.all(hits.map(g => getDoc('responses', g.id)));
-      return json({ groups: hits.map((g, i) => publicGroup(g, done[i])) });
+      return json({ groups: hits.map((g, i) => publicGroup(g, done[i] && done[i].email)) });
     }
 
     if (p.action === 'unlock') {
@@ -52,11 +52,11 @@ export default async (req) => {
         answers.push({ name, attending: a.attending, plus: !!m.plus });
       }
       const prev = await getDoc('responses', id);
-      if (prev && norm(prev.email) !== norm(email)) return json({ ok: false, error: 'locked' });
+      if (prev && prev.email && norm(prev.email) !== norm(email)) return json({ ok: false, error: 'locked' });
       const now = new Date();
-      const history = prev ? [...(prev.history || []), { answers: prev.answers, email: prev.email, at: prev.updatedAt }].slice(-20) : [];
+      const history = prev ? [...(prev.history || []), { answers: prev.answers, email: prev.email, at: prev.updatedAt, by: prev.lastBy || 'invitado' }].slice(-20) : [];
       const lang = p.lang === 'en' ? 'en' : 'es';
-      await setDoc('responses', id, { email, lang, answers, createdAt: prev ? prev.createdAt : now, updatedAt: now, history, edited: !!prev });
+      await setDoc('responses', id, { email, lang, answers, createdAt: prev ? prev.createdAt : now, updatedAt: now, history, edited: !!prev, lastBy: 'invitado' });
       let mailed = true;
       try { await sendMail(guestEmail({ members: g.members, answers, email, lang })); }
       catch (e) { mailed = false; console.error('correo', e.message); }

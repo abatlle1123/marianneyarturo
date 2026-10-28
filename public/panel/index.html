@@ -54,6 +54,17 @@ header .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .pill.y{background:var(--olive);color:#fff;border-color:var(--olive)}
 .pill.n{background:var(--no);color:#fff;border-color:var(--no)}
 .plus{font-style:italic;color:var(--muted)}
+.grp .meta{align-items:center}
+.ed{border:0;background:none;color:var(--olive);font-size:12px;text-decoration:underline;cursor:pointer;padding:0}
+.grp .top{display:flex;justify-content:flex-end;padding:6px 14px 0}
+.by{font-size:11px;color:var(--muted);font-style:italic}
+.erow{display:grid;grid-template-columns:1fr 150px 28px;gap:8px;align-items:center;margin-bottom:8px}
+.erow input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--line);background:#fff}
+.erow select{padding:8px;border:1px solid var(--line);background:#fff}
+.erow .x{border:0;background:none;font-size:18px;color:var(--muted);cursor:pointer}
+.ck{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin:-4px 0 10px}
+dialog input.full{width:100%;padding:8px 10px;border:1px solid var(--line);background:#fff}
+.btn.del{border-color:#b0673f;color:#b0673f;margin-right:auto}
 .empty{padding:30px;text-align:center;color:var(--muted)}
 dialog{border:1px solid var(--line);background:var(--paper);padding:24px;max-width:640px;width:calc(100% - 30px);margin:auto}
 dialog::backdrop{background:rgba(40,45,35,.35)}
@@ -80,6 +91,7 @@ dialog select{width:100%;padding:8px;border:1px solid var(--line);background:#ff
 <div id="app" hidden>
   <header><div class="wrap">
     <div class="brand">Marianne <i>&amp;</i> Arturo</div><div class="tag">RSVP</div><div class="sp"></div>
+    <button class="btn" id="add">Agregar grupo</button>
     <button class="btn" id="up">Cargar lista</button>
     <button class="btn s" id="dl">Descargar Excel</button>
     <button class="btn" id="out" title="Salir">Salir</button>
@@ -103,7 +115,7 @@ dialog select{width:100%;padding:8px;border:1px solid var(--line);background:#ff
 
 <dialog id="dlg">
   <h2>Cargar lista de invitados</h2>
-  <p class="note">Excel con una fila por persona y una fila en blanco entre grupos. Si vuelves a cargar la lista, las respuestas ya recibidas se conservan.</p>
+  <p class="note">Excel con una fila por persona y una fila en blanco entre grupos. Si ya hay una lista cargada, primero te mostramos qué cambia (nuevos, modificados, quitados) y luego confirmas. Las respuestas recibidas se conservan.</p>
   <input type="file" id="file" accept=".xlsx,.xls,.csv" style="margin-top:12px">
   <div id="map" hidden>
     <label>Columna del nombre</label><select id="cName"></select>
@@ -113,6 +125,18 @@ dialog select{width:100%;padding:8px;border:1px solid var(--line);background:#ff
   </div>
   <p class="err" id="uerr"></p>
   <div class="acts"><button class="btn" id="cancel" type="button">Cancelar</button><button class="btn s" id="go" type="button" disabled>Revisar cambios</button></div>
+</dialog>
+
+<dialog id="edlg">
+  <h2 id="etitle">Editar grupo</h2>
+  <p class="note">Cambia nombres, agrega personas o registra una respuesta recibida por teléfono o WhatsApp. Estos cambios no envían correo ni salen en el resumen diario.</p>
+  <div id="erows" style="margin-top:14px"></div>
+  <button class="btn" type="button" id="eadd">+ Persona</button>
+  <button class="btn" type="button" id="eplus">+ Acompañante</button>
+  <label>Correo de contacto (opcional)</label><input class="full" id="email" type="email" placeholder="si se lo pidieron">
+  <label>Nota (opcional)</label><input class="full" id="enote" type="text" placeholder="ej. confirmó por teléfono con Marianne">
+  <p class="err" id="eerr"></p>
+  <div class="acts"><button class="btn del" type="button" id="edel">Eliminar grupo</button><button class="btn" type="button" id="ecancel">Cancelar</button><button class="btn s" type="button" id="esave">Guardar</button></div>
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -165,7 +189,7 @@ function draw(){
     var r=s.R[g.id];
     if(F==='done'&&!r)return;if(F==='pending'&&r)return;if(F==='no'&&!(r&&r.answers.some(function(a){return !a.attending})))return;
     if(q){var h=norm(g.members.map(function(m){return m.name}).join(' ')+' '+(r?r.email+' '+r.answers.map(function(a){return a.name}).join(' '):''));if(h.indexOf(q)<0)return}
-    out+='<div class="grp">'+(r?'<div class="meta"><span>'+esc(r.email)+'</span><span>'+new Date(r.updatedAt).toLocaleDateString('es-DO',{day:'numeric',month:'short'})+(r.edited?' · modificado':'')+'</span></div>':'');
+    out+='<div class="grp"><div class="meta"><span>'+(r?esc(r.email||'sin correo')+(r.lastBy==='admin'?' <span class="by">· registrado por ustedes'+(r.note?': '+esc(r.note):'')+'</span>':''):'')+'</span><span>'+(r?new Date(r.updatedAt).toLocaleDateString('es-DO',{day:'numeric',month:'short'})+(r.edited?' · modificado':'')+' · ':'')+'<button class="ed" data-id="'+esc(g.id)+'">Editar</button></span></div>';
     var al=r?align(g.members,r.answers):[];g.members.forEach(function(m,i){var a=al[i],nm=m.plus?(a&&a.name?a.name+' <span class="plus">(acompañante)</span>':'<span class="plus">Acompañante</span>'):esc(m.name);
       out+='<div class="row"><div>'+nm+'</div><span class="pill '+(a?(a.attending?'y':'n'):'')+'">'+(a?(a.attending?'Asiste':'No asiste'):'Pendiente')+'</span></div>'});
     out+='</div>';
@@ -188,8 +212,10 @@ $('dl').onclick=function(){
       var r=s.R[g.id];
       g.members.forEach(function(m,i){
         var orig=(g.rows||[])[i]||{},a=r?align(g.members,r.answers)[i]:null;
-        rows.push(cols.map(function(c){return orig[c]==null?'':orig[c]}).concat([
-          a?(a.attending?'Asiste':'No asiste'):'Pendiente', a?a.name:'', r?r.email:'', r?new Date(r.updatedAt).toLocaleString('es-DO'):''
+        var base=cols.map(function(c){return orig[c]==null?'':orig[c]});
+        if(!Object.keys(orig).length&&base.length)base[0]=m.plus?'Acompañante':m.name;
+        rows.push(base.concat([
+          a?(a.attending?'Asiste':'No asiste'):'Pendiente', a?a.name:'', a&&r?(r.email||(r.lastBy==='admin'?'(registrado en el panel)':'')):'', a&&r?new Date(r.updatedAt).toLocaleString('es-DO'):''
         ]));
       });
     });
@@ -241,13 +267,52 @@ function preview(){
   var g=parse(),n=g.reduce(function(a,x){return a+x.members.length},0),p=g.reduce(function(a,x){return a+x.members.filter(function(m){return m.plus}).length},0);
   $('sum').textContent=g.length+' grupos · '+n+' personas'+(p?' · '+p+' acompañantes sin nombre':'')+'. Revisa que los grupos se vean bien:';
   $('prev').innerHTML=g.slice(0,40).map(function(x){return '<div>'+x.members.map(function(m){return m.plus?'<i>acompañante</i>':esc(m.name)}).join(' · ')+'</div>'}).join('')+(g.length>40?'<div>… y '+(g.length-40)+' más</div>':'');
-  $('go').disabled=!g.length;CHECKED=false;$('go').textContent='Revisar cambios';
+  $('go').disabled=!g.length;CHECKED=false;$('go').textContent=D&&D.groups.length?'Comparar con la lista actual':'Cargar';
 }
+var EG=null;
+function erow(m,a){
+  var d=document.createElement('div');d.className='erow';d.dataset.plus=m.plus?'1':'';
+  d.innerHTML='<input type="text" placeholder="'+(m.plus?'Acompañante (nombre si lo saben)':'Nombre y apellido')+'" value="'+esc(m.plus?(a&&a.name&&a.name!=='Acompañante'?a.name:''):m.name)+'">'
+    +'<select><option value="">Pendiente</option><option value="y">Asiste</option><option value="n">No asiste</option></select><button class="x" type="button" title="Quitar">×</button>';
+  d.querySelector('select').value=a?(a.attending?'y':'n'):'';
+  d.querySelector('.x').onclick=function(){d.remove()};
+  $('erows').appendChild(d);
+}
+function openEdit(id){
+  var g=id?D.groups.find(function(x){return x.id===id}):null,r=g&&stats().R[g.id],al=g&&r?align(g.members,r.answers):[];
+  EG=g;$('etitle').textContent=g?'Editar grupo':'Agregar grupo';$('erows').innerHTML='';$('eerr').textContent='';
+  (g?g.members:[{name:''}]).forEach(function(m,i){erow(m,al[i])});
+  $('email').value=r?r.email||'':'';$('enote').value=r&&r.note||'';$('edel').hidden=!g;$('edlg').showModal();
+}
+$('list').addEventListener('click',function(e){var b=e.target.closest('.ed');if(b)openEdit(b.getAttribute('data-id'))});
+$('add').onclick=function(){openEdit(null)};
+$('eadd').onclick=function(){erow({name:''})};
+$('eplus').onclick=function(){erow({name:'',plus:true})};
+$('ecancel').onclick=function(){$('edlg').close()};
+$('esave').onclick=function(){
+  var members=[],answers=[];
+  [].forEach.call($('erows').children,function(d){
+    var nm=d.querySelector('input').value.trim(),plus=!!d.dataset.plus,v=d.querySelector('select').value;
+    if(!plus&&!nm)return;
+    members.push(plus?{name:'',plus:true}:{name:nm});answers.push(v?{attending:v==='y',name:plus?nm:''}:{});
+  });
+  if(!members.length){$('eerr').textContent='Agrega al menos una persona.';return}
+  var b=this;b.disabled=true;
+  call('saveGroup',{id:EG&&EG.id,members:members,answers:answers,email:$('email').value.trim(),note:$('enote').value.trim()}).then(function(j){
+    b.disabled=false;if(!j.ok){$('eerr').textContent=j.detail||'No se pudo guardar.';return}
+    $('edlg').close();load();
+  }).catch(function(e){b.disabled=false;$('eerr').textContent='No se pudo guardar: '+e.message});
+};
+$('edel').onclick=function(){
+  if(!EG||!confirm('¿Eliminar este grupo y su respuesta? Esto no se puede deshacer.'))return;
+  call('deleteGroup',{id:EG.id}).then(function(){$('edlg').close();load()});
+};
+
 var CHECKED=false;
 function li(arr){return arr.slice(0,30).map(function(x){return '<div>'+x+'</div>'}).join('')+(arr.length>30?'<div>… y '+(arr.length-30)+' más</div>':'')}
 $('go').onclick=function(){
   var b=this;b.disabled=true;$('uerr').textContent='';
-  if(!CHECKED){
+  if(!CHECKED&&D&&D.groups.length){
     b.textContent='Revisando…';
     call('upload',{groups:parse(),columns:SHEET.head,dryRun:true}).then(function(j){
       b.disabled=false;
@@ -258,7 +323,7 @@ $('go').onclick=function(){
       if(d.changed.length)h+='<div><b>Modificados ('+d.changed.length+')</b></div>'+li(d.changed.map(function(x){return esc(x.before)+' → '+esc(x.after)+(x.answered?' <b style="color:#b0673f">· ya respondió</b>':'')}));
       if(d.removed.length)h+='<div><b>Se quitan ('+d.removed.length+')</b></div>'+li(d.removed.map(function(x){return esc(x.names)+(x.answered?' <b style="color:#b0673f">· ya respondió (su respuesta se conserva, pero no se verá)</b>':'')}));
       if(!d.added.length&&!d.changed.length&&!d.removed.length)h+='<div>No hay cambios respecto a la lista actual.</div>';
-      $('sum').textContent=warn?'Atención: hay cambios en grupos que ya respondieron. Revisa antes de confirmar.':'Revisa los cambios y confirma:';
+      var none=!d.added.length&&!d.changed.length&&!d.removed.length;$('sum').textContent=none?'La lista que subiste es igual a la actual.':warn?'Atención: hay cambios en grupos que ya respondieron. Revisa antes de confirmar.':'Esto cambia respecto a la lista que ya está cargada. Si está bien, confirma:';
       $('prev').innerHTML=h;CHECKED=true;b.textContent='Confirmar carga';
     }).catch(function(e){b.disabled=false;b.textContent='Revisar cambios';$('uerr').textContent='No se pudo revisar: '+e.message});
     return;

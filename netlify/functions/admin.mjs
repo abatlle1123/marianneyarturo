@@ -1,6 +1,6 @@
 // API del panel privado: entrar, leer datos y cargar la lista de invitados.
 import crypto from 'node:crypto';
-import { json, clientIp, norm, limited, listDocs, commit, groups, dropGroupsCache, signAdmin, checkAdmin, samePassword } from '../lib/core.mjs';
+import { json, clientIp, norm, validEmail, limited, listDocs, getDoc, commit, groups, dropGroupsCache, signAdmin, checkAdmin, samePassword, alignAnswers } from '../lib/core.mjs';
 
 export const config = { path: '/api/admin' };
 
@@ -19,6 +19,11 @@ function assignIds(newGroups, oldGroups) {
     }
     used.add(id); return id;
   });
+}
+function alignRows(g, members) {
+  const left = (g.members || []).map((m, i) => ({ m, row: (g.rows || [])[i] || {} }));
+  return members.map(m => { const i = left.findIndex(x => x.m.plus === m.plus && (m.plus || norm(x.m.name) === norm(m.name)));
+    return i >= 0 ? left.splice(i, 1)[0].row : {}; });
 }
 const names = g => g.members.map(m => m.plus ? 'acompañante' : m.name).join(' · ');
 
@@ -51,6 +56,7 @@ export default async (req) => {
       const [old, rs] = await Promise.all([listDocs('groups'), listDocs('responses')]);
       const ids = assignIds(incoming, old);
       const O = new Map(old.map(o => [o.id, o])), R = new Set(rs.map(r => r.id)), keep = new Set(ids);
+      old.forEach(o => { if (o.addedBy === 'admin') keep.add(o.id); });   // los grupos agregados en el panel no se borran al recargar
       const diff = { groups: incoming.length, people: incoming.reduce((a, g) => a + g.members.length, 0), added: [], changed: [], removed: [] };
       incoming.forEach((g, i) => {
         const o = O.get(ids[i]);
@@ -64,6 +70,41 @@ export default async (req) => {
         .concat([{ set: { col: 'meta', id: 'list', data: { columns: (p.columns || []).slice(0, 40), uploadedAt: now, count: incoming.length } } }]);
       await commit(ops); dropGroupsCache();
       return json({ ok: true, diff });
+    }
+
+    // Crear o editar un grupo y, opcionalmente, su respuesta (confirmaciones por teléfono, etc.)
+    if (p.action === 'saveGroup') {
+      const members = (p.members || []).slice(0, 20).map(m => ({ name: String(m.name || '').replace(/\s+/g, ' ').trim().slice(0, 80), plus: !!m.plus }))
+        .filter(m => m.plus || m.name);
+      if (!members.length) return json({ ok: false, error: 'invalid', detail: 'El grupo necesita al menos una persona.' });
+      const all = await groups(true);
+      let g = p.id ? all.find(x => x.id === p.id) : null;
+      if (p.id && !g) return json({ ok: false, error: 'invalid', detail: 'No se encontró el grupo.' });
+      const id = g ? g.id : assignIds([{ members }], all)[0];
+      const oldRows = g ? alignRows(g, members) : members.map(() => ({}));
+      const now = new Date(), ops = [];
+      ops.push({ set: { col: 'groups', id, data: { order: g ? g.order : (all.reduce((a, x) => Math.max(a, x.order || 0), 0) + 1), members, rows: oldRows, updatedAt: now, ...(g ? {} : { addedBy: 'admin' }) } } });
+      const ans = (p.answers || []).slice(0, members.length);
+      const answers = members.map((m, i) => {
+        const a = ans[i] || {}; if (typeof a.attending !== 'boolean') return null;
+        return { name: m.plus ? String(a.name || '').trim().slice(0, 80) || 'Acompañante' : m.name, attending: a.attending, plus: m.plus };
+      }).filter(Boolean);
+      const prev = await getDoc('responses', id);
+      const email = String(p.email || '').trim().slice(0, 200);
+      if (email && !validEmail(email)) return json({ ok: false, error: 'invalid', detail: 'Correo no válido.' });
+      if (answers.length) {
+        const history = prev ? [...(prev.history || []), { answers: prev.answers, email: prev.email, at: prev.updatedAt, by: prev.lastBy || 'invitado' }].slice(-20) : [];
+        ops.push({ set: { col: 'responses', id, data: { email: email || (prev && prev.email) || '', lang: (prev && prev.lang) || 'es', answers,
+          createdAt: prev ? prev.createdAt : now, updatedAt: now, history, edited: !!prev, lastBy: 'admin', note: String(p.note || '').slice(0, 200) } } });
+      } else if (prev) ops.push({ del: { col: 'responses', id } });
+      await commit(ops); dropGroupsCache();
+      return json({ ok: true, id });
+    }
+
+    if (p.action === 'deleteGroup') {
+      const id = String(p.id || ''); if (!id) return json({ ok: false });
+      await commit([{ del: { col: 'groups', id } }, { del: { col: 'responses', id } }]); dropGroupsCache();
+      return json({ ok: true });
     }
 
     if (p.action === 'meta') {
