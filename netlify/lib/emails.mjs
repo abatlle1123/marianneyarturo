@@ -56,7 +56,9 @@ export function guestEmail({ members, answers, email, lang }) {
   const names = answers.map(a => a.name);
   const label = esc(groupLabel(members, lang, names));
   const anyYes = answers.some(a => a.attending);
-  const first = esc((names.find(Boolean) || '').split(' ')[0]);
+  // Saludo: primeros nombres de quienes asisten (máx. 2, en el orden de la lista); si nadie asiste, los dos primeros del grupo.
+  const pick = (anyYes ? answers.filter(a => a.attending) : answers).map(a => (a.name || '').trim().split(' ')[0]).filter(Boolean).slice(0, 2);
+  const first = esc(pick.join(lang === 'en' ? ' and ' : ' y '));
   const rows = answers.map(a => `<tr><td style="padding:7px 0;border-bottom:1px dashed ${C.line};font-size:15px;color:${C.ink}">${esc(a.name)}</td><td align="right" style="padding:7px 0;border-bottom:1px dashed ${C.line};font-size:14px;font-weight:600;color:${a.attending ? C.olive : C.no}">${a.attending ? t.yes : t.no}</td></tr>`).join('');
   const d = t.det;
   const details = anyYes ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:18px 0 6px;background:${C.bg}" bgcolor="${C.bg}"><tr><td style="padding:14px 16px;font-size:14px;line-height:1.6;color:${C.ink};text-align:left">
