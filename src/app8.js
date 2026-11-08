@@ -6,7 +6,7 @@
    ========================================================== */
 var CONFIG={
   links:{
-    registryCasaCuesta:'',  // enlace de la lista en Casa Cuesta
+    registryCasaCuesta:'https://listaderegalos.casacuesta.com/Event/Arturo-Batlle',  // lista en Casa Cuesta
     registryLeTavole:'',    // enlace de la lista en Le Tavole
     receptionMap:'https://www.google.com/maps/search/?api=1&query=Santo+Domingo+Country+Club'
   },
